@@ -1,8 +1,8 @@
 import UIKit
 
-private class KnobView : UIView {
+private class KnobView: UIView {
 
-    var color : UIColor = .white
+    var color: UIColor = .white
 
     init() {
         super.init(frame: .zero)
@@ -13,12 +13,12 @@ private class KnobView : UIView {
         fatalError()
     }
 
-    override func draw(_ rect: CGRect) {
+    override func draw(_: CGRect) {
 
         let w = self.frame.size.width
-        let margin : CGFloat = 1
+        let margin: CGFloat = 1
 
-        let knob = UIBezierPath(ovalIn: CGRect(x: margin, y: margin, width: w - 2*margin, height: w-2*margin))
+        let knob = UIBezierPath(ovalIn: CGRect(x: margin, y: margin, width: w - 2 * margin, height: w - 2 * margin))
         color.setStroke()
         knob.lineWidth = 2
         knob.stroke()
@@ -28,131 +28,147 @@ private class KnobView : UIView {
 }
 
 @IBDesignable
-class OutlineSliderView: UIView {
+public class OutlineSliderView: UIView {
 
     private let knobView = KnobView()
     private let parameterNameLabel = UILabel(frame: .zero)
     private let parameterValueLabel = UILabel(frame: .zero)
 
     @IBInspectable
-    var name : String = "Parameter" {
+    public var name: String = "Parameter" {
         didSet {
             self.setNeedsLayout()
-        }
-    }
-    @IBInspectable
-    var minValue : CGFloat = -100 {
-        didSet {
-            self.setNeedsLayout()
-            self.setNeedsDisplay()
-        }
-    }
-    @IBInspectable
-    var maxValue : CGFloat = 100 {
-        didSet {
-            self.setNeedsLayout()
-            self.setNeedsDisplay()
-        }
-    }
-    @IBInspectable
-    var value : CGFloat = 0 {
-        didSet {
-            self.setNeedsLayout()
-            self.setNeedsDisplay()
-            if value < minValue {
-                self.value = minValue
-            }
-            if value > maxValue {
-                self.value = maxValue
-            }
         }
     }
 
-    @IBInspectable var sliderColor : UIColor? = UIColor(white: 0.4, alpha: 1.000) {
-        didSet {
-            self.setNeedsDisplay()
-        }
-    }
-    @IBInspectable var textColor : UIColor? = UIColor(white: 0.65, alpha: 1.000) {
+    @IBInspectable
+    public var minValue: CGFloat = -100 {
         didSet {
             self.setNeedsLayout()
-        }
-    }
-    @IBInspectable var highlightColor : UIColor? = UIColor.white {
-        didSet {
-            knobView.color = self.highlightColor ?? UIColor.white
             self.setNeedsDisplay()
         }
     }
 
-    override func layoutSubviews() {
+    @IBInspectable
+    public var maxValue: CGFloat = 100 {
+        didSet {
+            self.setNeedsLayout()
+            self.setNeedsDisplay()
+        }
+    }
+
+    @IBInspectable
+    public var value: CGFloat = 0 {
+        didSet {
+            self.setNeedsLayout()
+            self.setNeedsDisplay()
+            if self.value < self.minValue {
+                self.value = self.minValue
+            }
+            if self.value > self.maxValue {
+                self.value = self.maxValue
+            }
+        }
+    }
+
+    @IBInspectable public var sliderColor: UIColor? = UIColor(white: 0.4, alpha: 1.000) {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
+
+    @IBInspectable public var textColor: UIColor? = UIColor(white: 0.65, alpha: 1.000) {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+
+    @IBInspectable public var highlightColor: UIColor? = UIColor.white {
+        didSet {
+            self.knobView.color = self.highlightColor ?? UIColor.white
+            self.setNeedsDisplay()
+        }
+    }
+
+    public override var intrinsicContentSize: CGSize {
+        return CGSize(width: 250, height: 100)
+    }
+
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
-        parameterNameLabel.text = self.name
-        parameterValueLabel.text = String(Int(self.value))
+        self.parameterNameLabel.text = self.name
+        self.parameterValueLabel.text = String(Int(self.value))
 
-        parameterNameLabel.sizeToFit()
-        parameterValueLabel.sizeToFit()
+        self.parameterNameLabel.sizeToFit()
+        self.parameterValueLabel.sizeToFit()
 
-        parameterNameLabel.frame.origin.x = 0
-        parameterNameLabel.frame.origin.y = 0
+        self.parameterNameLabel.frame.origin.x = 0
+        self.parameterNameLabel.frame.origin.y = 0
 
-        parameterValueLabel.frame.origin.x = self.frame.size.width - parameterValueLabel.frame.size.width
-        parameterValueLabel.frame.origin.y = 0
+        self.parameterValueLabel.frame.origin.x = self.frame.size.width - self.parameterValueLabel.frame.size.width
+        self.parameterValueLabel.frame.origin.y = 0
 
-        parameterNameLabel.textColor = textColor
-        parameterValueLabel.textColor = textColor
+        self.parameterNameLabel.textColor = textColor
+        self.parameterValueLabel.textColor = textColor
 
-        knobView.frame = CGRect(x: knobCenterX - knobSize / 2.0, y: sliderY - knobSize/2 + sliderHeight / 2, width: knobSize, height: knobSize)
+        self.knobView.frame = CGRect(x: self.knobCenterX - self.knobSize / 2.0, y: self.sliderY - self.knobSize / 2 + self.sliderHeight / 2, width: self.knobSize, height: self.knobSize)
 
     }
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
+        self.setupView()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        setupView()
+        self.setupView()
     }
 
     private func setupView() {
-        self.addSubview(parameterNameLabel)
-        self.addSubview(parameterValueLabel)
-        self.addSubview(knobView)
+        self.contentMode = .redraw
 
-        knobView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        self.addSubview(self.parameterNameLabel)
+        self.addSubview(self.parameterValueLabel)
+        self.addSubview(self.knobView)
+
+        self.knobView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePan(_:))))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
         tapGestureRecognizer.numberOfTapsRequired = 2
         self.addGestureRecognizer(tapGestureRecognizer)
     }
 
-    private let knobSize : CGFloat = 16
-    private let sliderY : CGFloat = 35
-    private let sliderHeight : CGFloat = 2
+    private let knobSize: CGFloat = 16
+    private let sliderY: CGFloat = 35
+    private let sliderHeight: CGFloat = 2
 
-    private var knobCenterX : CGFloat {
-        return CGFloat(self.value - self.minValue) / valuePt
+    private var knobCenterX: CGFloat {
+        return CGFloat(self.value - self.minValue) / self.valuePt
     }
 
-    private var valuePt : CGFloat {
-        return CGFloat(abs(minValue) + abs(maxValue)) / width
+    private var valuePt: CGFloat {
+        return CGFloat(abs(self.minValue) + abs(self.maxValue)) / self.width
     }
 
-    private var width : CGFloat {
+    private var width: CGFloat {
         return self.frame.size.width
     }
 
-    override func draw(_ rect: CGRect) {
+    public override func draw(_: CGRect) {
+
+        let ctx = UIGraphicsGetCurrentContext()!
+
+        ctx.clear(.infinite)
 
         // Cutout mask
         let cutoutRadius = knobSize * 0.8
+        let cutoutRect = CGRect(x: knobCenterX - cutoutRadius, y: sliderY, width: cutoutRadius * 2, height: 10)
         let cutout = UIBezierPath(rect: .infinite)
-        cutout.append(UIBezierPath(rect: CGRect(x: knobCenterX - cutoutRadius, y: sliderY, width: cutoutRadius * 2, height: 10)))
+        cutout.append(UIBezierPath(rect: cutoutRect))
         cutout.usesEvenOddFillRule = true
 
-        UIGraphicsGetCurrentContext()!.saveGState()
+        ctx.saveGState()
         cutout.addClip()
 
         // Slider Bar
@@ -166,16 +182,16 @@ class OutlineSliderView: UIView {
         (highlightColor ?? UIColor.white).setFill()
         highlightBar.fill()
 
-        UIGraphicsGetCurrentContext()!.restoreGState()
+        ctx.restoreGState()
 
     }
 
-    @objc func handlePan(_ gestureRecognizer : UIPanGestureRecognizer) {
-        self.value += gestureRecognizer.translation(in: knobView).x * valuePt
-        gestureRecognizer.setTranslation(.zero, in: knobView)
+    @objc func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        self.value += gestureRecognizer.translation(in: self.knobView).x * valuePt
+        gestureRecognizer.setTranslation(.zero, in: self.knobView)
     }
 
-    @objc func handleTap(_ gestureRecognizer : UITapGestureRecognizer) {
+    @objc func handleTap(_: UITapGestureRecognizer) {
         self.value = 0
     }
 
