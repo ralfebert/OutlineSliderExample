@@ -28,7 +28,7 @@ private class KnobView: UIView {
 }
 
 @IBDesignable
-public class OutlineSliderView: UIView {
+public class OutlineSliderView: UIControl {
 
     private let knobView = KnobView()
     private let parameterNameLabel = UILabel(frame: .zero)
@@ -60,8 +60,10 @@ public class OutlineSliderView: UIView {
     @IBInspectable
     public var value: CGFloat = 0 {
         didSet {
+            guard self.value != oldValue else { return }
             self.setNeedsLayout()
             self.setNeedsDisplay()
+            self.sendActions(for: .valueChanged)
             if self.value < self.minValue {
                 self.value = self.minValue
             }
